@@ -1,7 +1,8 @@
 from fastapi import APIRouter, Depends, HTTPException, status
-from sqlalchemy.orm import Session
+from supabase import Client
+from typing import Dict, Any
 from typing import List
-from ..database import get_db
+from ..database import get_supabase
 from ..models import Message, WeekApproval, User
 from ..schemas import NotificationResponse, WeekApprovalResponse, MessageResponse
 from ..dependencies import get_current_user
@@ -12,8 +13,8 @@ router = APIRouter(prefix="/notifications", tags=["notifications"])
 
 @router.get("/", response_model=List[NotificationResponse])
 async def get_notifications(
-    current_user: User = Depends(get_current_user),
-    db: Session = Depends(get_db)
+    current_user: Dict[str, Any] = Depends(get_current_user),
+    supabase: Client = Depends(get_supabase)
 ):
     """Get notifications for current user"""
     notifications = []
@@ -128,8 +129,8 @@ async def get_notifications(
 
 @router.get("/pending", response_model=dict)
 async def get_pending_items(
-    current_user: User = Depends(get_current_user),
-    db: Session = Depends(get_db)
+    current_user: Dict[str, Any] = Depends(get_current_user),
+    supabase: Client = Depends(get_supabase)
 ):
     """Get pending items (approvals and messages)"""
     pending_approvals = []

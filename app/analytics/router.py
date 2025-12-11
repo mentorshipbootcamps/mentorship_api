@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, status
-from sqlalchemy.orm import Session
-from sqlalchemy import func
-from ..database import get_db
+from supabase import Client
+from typing import Dict, Any
+from ..database import get_supabase
 from ..models import User, WeekApproval
 from ..schemas import DashboardStats
 from ..dependencies import get_current_admin, get_current_user
@@ -12,7 +12,7 @@ router = APIRouter(prefix="/analytics", tags=["analytics"])
 @router.get("/dashboard", response_model=DashboardStats)
 async def get_dashboard_stats(
     current_user = Depends(get_current_admin),
-    db: Session = Depends(get_db)
+    supabase: Client = Depends(get_supabase)
 ):
     """Get dashboard statistics (admin only)"""
     # Get user counts
@@ -74,7 +74,7 @@ async def get_dashboard_stats(
 @router.get("/mentor/stats")
 async def get_mentor_stats(
     current_user = Depends(get_current_user),
-    db: Session = Depends(get_db)
+    supabase: Client = Depends(get_supabase)
 ):
     """Get statistics for current mentor"""
     if current_user.role != "mentor":

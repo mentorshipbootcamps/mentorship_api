@@ -1,7 +1,8 @@
 from fastapi import APIRouter, Depends, HTTPException, status
-from sqlalchemy.orm import Session
+from supabase import Client
+from typing import Dict, Any
 from typing import List
-from ..database import get_db
+from ..database import get_supabase
 from ..models import WeekActivity
 from ..schemas import WeekActivityCreate, WeekActivityResponse
 from ..dependencies import get_current_user, get_current_admin
@@ -13,7 +14,7 @@ router = APIRouter(prefix="/curriculum", tags=["curriculum"])
 @router.get("/weeks", response_model=List[WeekActivityResponse])
 async def get_all_weeks(
     current_user = Depends(get_current_user),
-    db: Session = Depends(get_db)
+    supabase: Client = Depends(get_supabase)
 ):
     """Get all week activities"""
     return db.query(WeekActivity).order_by(WeekActivity.week).all()
@@ -23,7 +24,7 @@ async def get_all_weeks(
 async def get_week_activity(
     week_number: int,
     current_user = Depends(get_current_user),
-    db: Session = Depends(get_db)
+    supabase: Client = Depends(get_supabase)
 ):
     """Get specific week activity"""
     week_activity = db.query(WeekActivity).filter(WeekActivity.week == week_number).first()
@@ -39,7 +40,7 @@ async def get_week_activity(
 async def get_bloc_activities(
     bloc_number: int,
     current_user = Depends(get_current_user),
-    db: Session = Depends(get_db)
+    supabase: Client = Depends(get_supabase)
 ):
     """Get all activities for a specific bloc"""
     if bloc_number not in [1, 2, 3]:
@@ -56,7 +57,7 @@ async def get_bloc_activities(
 async def create_week_activity(
     week_data: WeekActivityCreate,
     current_user = Depends(get_current_admin),
-    db: Session = Depends(get_db)
+    supabase: Client = Depends(get_supabase)
 ):
     """Create a new week activity (admin only)"""
     # Check if week already exists
@@ -79,7 +80,7 @@ async def update_week_activity(
     week_number: int,
     week_data: WeekActivityCreate,
     current_user = Depends(get_current_admin),
-    db: Session = Depends(get_db)
+    supabase: Client = Depends(get_supabase)
 ):
     """Update week activity (admin only)"""
     week_activity = db.query(WeekActivity).filter(WeekActivity.week == week_number).first()
@@ -102,7 +103,7 @@ async def update_week_activity(
 async def delete_week_activity(
     week_number: int,
     current_user = Depends(get_current_admin),
-    db: Session = Depends(get_db)
+    supabase: Client = Depends(get_supabase)
 ):
     """Delete week activity (admin only)"""
     week_activity = db.query(WeekActivity).filter(WeekActivity.week == week_number).first()

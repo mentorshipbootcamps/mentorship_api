@@ -1,8 +1,9 @@
 from fastapi import APIRouter, Depends, HTTPException, status
-from sqlalchemy.orm import Session
+from supabase import Client
+from typing import Dict, Any
 from typing import List
 from datetime import datetime
-from ..database import get_db
+from ..database import get_supabase
 from ..models import WeekApproval, User
 from ..schemas import WeekApprovalCreate, WeekApprovalUpdate, WeekApprovalResponse
 from ..dependencies import get_current_user, get_current_mentor, get_current_mentee
@@ -14,8 +15,8 @@ router = APIRouter(prefix="/approvals", tags=["approvals"])
 @router.post("/", response_model=WeekApprovalResponse, status_code=status.HTTP_201_CREATED)
 async def create_week_approval(
     approval_data: WeekApprovalCreate,
-    current_user: User = Depends(get_current_mentee),
-    db: Session = Depends(get_db)
+    current_user: Dict[str, Any] = Depends(get_current_mentee),
+    supabase: Client = Depends(get_supabase)
 ):
     """Submit a week for approval (mentee only)"""
     # Verify mentee owns this approval
@@ -69,8 +70,8 @@ async def create_week_approval(
 
 @router.get("/", response_model=List[WeekApprovalResponse])
 async def get_week_approvals(
-    current_user: User = Depends(get_current_user),
-    db: Session = Depends(get_db),
+    current_user: Dict[str, Any] = Depends(get_current_user),
+    supabase: Client = Depends(get_supabase),
     status_filter: str = None
 ):
     """Get week approvals based on user role"""
@@ -91,8 +92,8 @@ async def get_week_approvals(
 
 @router.get("/pending", response_model=List[WeekApprovalResponse])
 async def get_pending_approvals(
-    current_user: User = Depends(get_current_mentor),
-    db: Session = Depends(get_db)
+    current_user: Dict[str, Any] = Depends(get_current_mentor),
+    supabase: Client = Depends(get_supabase)
 ):
     """Get pending approvals for current mentor"""
     approvals = db.query(WeekApproval).filter(
@@ -105,8 +106,8 @@ async def get_pending_approvals(
 
 @router.get("/completed", response_model=List[WeekApprovalResponse])
 async def get_completed_approvals(
-    current_user: User = Depends(get_current_mentor),
-    db: Session = Depends(get_db)
+    current_user: Dict[str, Any] = Depends(get_current_mentor),
+    supabase: Client = Depends(get_supabase)
 ):
     """Get completed approvals for current mentor"""
     approvals = db.query(WeekApproval).filter(
@@ -120,8 +121,8 @@ async def get_completed_approvals(
 @router.get("/{approval_id}", response_model=WeekApprovalResponse)
 async def get_approval(
     approval_id: str,
-    current_user: User = Depends(get_current_user),
-    db: Session = Depends(get_db)
+    current_user: Dict[str, Any] = Depends(get_current_user),
+    supabase: Client = Depends(get_supabase)
 ):
     """Get specific approval"""
     approval = db.query(WeekApproval).filter(WeekApproval.id == approval_id).first()
@@ -145,8 +146,8 @@ async def get_approval(
 async def approve_week(
     approval_id: str,
     approval_update: WeekApprovalUpdate,
-    current_user: User = Depends(get_current_mentor),
-    db: Session = Depends(get_db)
+    current_user: Dict[str, Any] = Depends(get_current_mentor),
+    supabase: Client = Depends(get_supabase)
 ):
     """Approve a week (mentor only)"""
     approval = db.query(WeekApproval).filter(WeekApproval.id == approval_id).first()
@@ -190,8 +191,8 @@ async def approve_week(
 async def reject_week(
     approval_id: str,
     approval_update: WeekApprovalUpdate,
-    current_user: User = Depends(get_current_mentor),
-    db: Session = Depends(get_db)
+    current_user: Dict[str, Any] = Depends(get_current_mentor),
+    supabase: Client = Depends(get_supabase)
 ):
     """Reject a week (mentor only)"""
     approval = db.query(WeekApproval).filter(WeekApproval.id == approval_id).first()

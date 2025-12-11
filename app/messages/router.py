@@ -1,8 +1,9 @@
 from fastapi import APIRouter, Depends, HTTPException, status
-from sqlalchemy.orm import Session
+from supabase import Client
+from typing import Dict, Any
 from typing import List
 from datetime import datetime
-from ..database import get_db
+from ..database import get_supabase
 from ..models import Message, User
 from ..schemas import MessageCreate, MessageResponse, MessageResponseRequest
 from ..dependencies import get_current_user
@@ -14,8 +15,8 @@ router = APIRouter(prefix="/messages", tags=["messages"])
 @router.post("/", response_model=MessageResponse, status_code=status.HTTP_201_CREATED)
 async def send_message(
     message_data: MessageCreate,
-    current_user: User = Depends(get_current_user),
-    db: Session = Depends(get_db)
+    current_user: Dict[str, Any] = Depends(get_current_user),
+    supabase: Client = Depends(get_supabase)
 ):
     """Send a message"""
     # Verify recipient exists
@@ -64,8 +65,8 @@ async def send_message(
 
 @router.get("/", response_model=List[MessageResponse])
 async def get_messages(
-    current_user: User = Depends(get_current_user),
-    db: Session = Depends(get_db),
+    current_user: Dict[str, Any] = Depends(get_current_user),
+    supabase: Client = Depends(get_supabase),
     status_filter: str = None
 ):
     """Get messages for current user"""
@@ -104,8 +105,8 @@ async def get_messages(
 
 @router.get("/sent", response_model=List[MessageResponse])
 async def get_sent_messages(
-    current_user: User = Depends(get_current_user),
-    db: Session = Depends(get_db)
+    current_user: Dict[str, Any] = Depends(get_current_user),
+    supabase: Client = Depends(get_supabase)
 ):
     """Get messages sent by current user"""
     messages = db.query(Message).filter(
@@ -137,8 +138,8 @@ async def get_sent_messages(
 
 @router.get("/received", response_model=List[MessageResponse])
 async def get_received_messages(
-    current_user: User = Depends(get_current_user),
-    db: Session = Depends(get_db)
+    current_user: Dict[str, Any] = Depends(get_current_user),
+    supabase: Client = Depends(get_supabase)
 ):
     """Get messages received by current user"""
     messages = db.query(Message).filter(
@@ -171,8 +172,8 @@ async def get_received_messages(
 @router.get("/{message_id}", response_model=MessageResponse)
 async def get_message(
     message_id: str,
-    current_user: User = Depends(get_current_user),
-    db: Session = Depends(get_db)
+    current_user: Dict[str, Any] = Depends(get_current_user),
+    supabase: Client = Depends(get_supabase)
 ):
     """Get specific message"""
     message = db.query(Message).filter(Message.id == message_id).first()
@@ -214,8 +215,8 @@ async def get_message(
 async def respond_to_message(
     message_id: str,
     response_data: MessageResponseRequest,
-    current_user: User = Depends(get_current_user),
-    db: Session = Depends(get_db)
+    current_user: Dict[str, Any] = Depends(get_current_user),
+    supabase: Client = Depends(get_supabase)
 ):
     """Respond to a message"""
     original_message = db.query(Message).filter(Message.id == message_id).first()
