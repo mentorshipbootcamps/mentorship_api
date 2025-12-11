@@ -4,7 +4,6 @@ from typing import Dict, Any
 from typing import List
 from datetime import datetime
 from ..database import get_supabase
-from ..models import WeekApproval, User
 from ..schemas import WeekApprovalCreate, WeekApprovalUpdate, WeekApprovalResponse
 from ..dependencies import get_current_user, get_current_mentor, get_current_mentee
 import uuid

@@ -2,7 +2,6 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from supabase import Client
 from typing import Dict, Any
 from ..database import get_supabase
-from ..models import User, WeekApproval
 from ..schemas import DashboardStats
 from ..dependencies import get_current_admin, get_current_user
 

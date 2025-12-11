@@ -4,7 +4,6 @@ from typing import Dict, Any
 from typing import List
 from datetime import datetime
 from ..database import get_supabase
-from ..models import Message, User
 from ..schemas import MessageCreate, MessageResponse, MessageResponseRequest
 from ..dependencies import get_current_user
 import uuid

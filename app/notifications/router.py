@@ -3,7 +3,6 @@ from supabase import Client
 from typing import Dict, Any
 from typing import List
 from ..database import get_supabase
-from ..models import Message, WeekApproval, User
 from ..schemas import NotificationResponse, WeekApprovalResponse, MessageResponse
 from ..dependencies import get_current_user
 import uuid
