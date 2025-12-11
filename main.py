@@ -6,13 +6,13 @@ import os
 # Load environment variables from .env file
 load_dotenv()
 
-from .auth.router import router as auth_router
-from .users.router import router as users_router
-from .curriculum.router import router as curriculum_router
-from .approvals.router import router as approvals_router
-from .messages.router import router as messages_router
-from .notifications.router import router as notifications_router
-from .analytics.router import router as analytics_router
+from app.auth.router import router as auth_router
+from app.users.router import router as users_router
+from app.curriculum.router import router as curriculum_router
+from app.approvals.router import router as approvals_router
+from app.messages.router import router as messages_router
+from app.notifications.router import router as notifications_router
+from app.analytics.router import router as analytics_router
 
 # Note: Database tables are created in Supabase
 # Run supabase_schema.sql in Supabase SQL Editor to create tables
@@ -60,4 +60,4 @@ if __name__ == "__main__":
     import uvicorn
     import os
     port = int(os.getenv("PORT", 8000))
-    uvicorn.run("app.main:app", host="0.0.0.0", port=port, reload=False)
+    uvicorn.run("main:app", host="0.0.0.0", port=port, reload=False)
